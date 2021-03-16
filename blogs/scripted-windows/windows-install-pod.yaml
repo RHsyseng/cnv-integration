@@ -27,13 +27,13 @@ spec:
                       oc apply -f /mnt/install-windows-configmap/windows-install.yaml
 
                       echo "Waiting for Windows installation to be completed"
-                      while [[  $(oc get vmi windows2019-installation -o 'jsonpath={..status.phase}' 2&>/dev/null ) != "Succeeded" ]]
+                      while [[  $(oc get vmi windows2019-installation -o 'jsonpath={..status.phase}' 2>/dev/null ) != "Succeeded" ]]
                       do
                          sleep 10
                       done
                       echo "Windows installation finished"
 
-                      if [[ $(oc get pvc win2k19 2&>/dev/null ) ]]
+                      if [[ $(oc get pvc win2k19 2>/dev/null ) ]]
                       then 
                         oc delete pvc win2k19
                       fi
@@ -46,7 +46,7 @@ spec:
                       done
                       echo "PVC clone completed"
 
-                      if [[ $(oc get dv -n  openshift-virtualization-os-images win2k19 2&>/dev/null ) ]]
+                      if [[ $(oc get dv -n  openshift-virtualization-os-images win2k19 2>/dev/null ) ]]
                       then
                          oc delete dv -n openshift-virtualization-os-images win2k19
                       fi
