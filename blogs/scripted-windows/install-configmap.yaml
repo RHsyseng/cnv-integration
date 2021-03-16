@@ -1,0 +1,124 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: install-windows-configmap
+
+data:
+    clone-pvc.yaml: |
+                      apiVersion: v1
+                      kind: PersistentVolumeClaim
+                      metadata:
+                        name: win2k19
+                      spec:
+                        storageClassName: cnv-integration-svn
+                        accessModes:
+                          - ReadWriteOnce
+                        resources:
+                          requests:
+                            storage: 12Gi
+                        dataSource:
+                          kind: PersistentVolumeClaim
+                          name: rootdisk
+
+    clone-dv.yaml: |
+                      apiVersion: cdi.kubevirt.io/v1alpha1
+                      kind: DataVolume
+                      metadata:
+                        name: win2k19
+                        namespace: openshift-virtualization-os-images
+                      spec:
+                        source:
+                          pvc:
+                            namespace: "default"
+                            name: "win2k19"
+                        pvc:
+                          accessModes:
+                            - ReadWriteOnce
+                          resources:
+                            requests:
+                              storage: 12Gi
+    
+    windows-install.yaml: |
+                        apiVersion: kubevirt.io/v1alpha3
+                        kind: VirtualMachine
+                        metadata:
+                          labels:
+                            app: windows2019-installation
+                          name: windows2019-installation
+                          namespace: default
+                          annotations:
+                            name.os.template.kubevirt.io/win2k19: Microsoft Windows Server 2019
+                            description: windows2019-installation
+                        spec:
+                          runStrategy: RerunOnFailure
+                          template:
+                            metadata:
+                              labels:
+                                kubevirt.io/domain: windows2019-installation
+                                vm.kubevirt.io/name: windows2019-installation
+                                workload.template.kubevirt.io/server: 'true'
+                            spec:
+                              domain:
+                                cpu:
+                                  cores: 2
+                                  sockets: 1
+                                  threads: 1
+                                devices:
+                                  disks:
+                                    - disk:
+                                        bus: virtio
+                                      name: rootdisk
+                                    - bootOrder: 1
+                                      cdrom:
+                                        bus: sata
+                                      name: windows-iso
+                                    - cdrom:
+                                        bus: sata
+                                      name: windows-guest-tools
+                                    - cdrom:
+                                        bus: sata
+                                      name: win-installation-scripts
+                                  interfaces:
+                                    - masquerade: {}
+                                      model: virtio
+                                      name: default
+                                  networkInterfaceMultiqueue: true
+                                  rng: {}
+                                machine:
+                                  type: pc-q35-rhel8.2.0
+                                resources:
+                                  requests:
+                                    memory: 4Gi
+                              evictionStrategy: LiveMigrate
+                              hostname: windows2019-installation
+                              networks:
+                                - name: default
+                                  pod: {}
+                              terminationGracePeriodSeconds: 180
+                              volumes:
+                                - containerDisk:
+                                    image: registry.redhat.io/container-native-virtualization/virtio-win
+                                  name: windows-guest-tools
+                                - dataVolume:
+                                    name: rootdisk
+                                  name: rootdisk
+                                - name: windows-iso
+                                  persistentVolumeClaim:
+                                    claimName: windows-iso
+                                - configMap:
+                                    name: win-installation-scripts
+                                  name: win-installation-scripts
+                          dataVolumeTemplates:
+                          - metadata:
+                              name: rootdisk
+                            spec:
+                              pvc:
+                                accessModes:
+                                - ReadWriteOnce
+                                resources:
+                                  requests:
+                                    storage: 12Gi
+                              source:
+                                blank: {}
+          

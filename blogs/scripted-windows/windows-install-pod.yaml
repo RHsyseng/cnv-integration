@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Pod
+metadata:
+     name: windows-install-pod
+spec:
+     restartPolicy: Never
+     volumes:
+       - name: install-windows-configmap
+         configMap:
+           name: install-windows-configmap
+     containers:
+     - name: ose-cli
+       image: registry.redhat.io/openshift4/ose-cli
+       envFrom:
+          - secretRef:
+               name: oc-creds
+       volumeMounts:
+         - name: install-windows-configmap
+           mountPath: /mnt/install-windows-configmap
+
+       command: ["/bin/sh"]
+       args:
+               - "-c"
+               - |  
+                      oc login $OC_API -u $OC_USER -p $OC_PASS --insecure-skip-tls-verify=true;
+
+                      oc apply -f /mnt/install-windows-configmap/windows-install.yaml
+
+                      echo "Waiting for Windows installation to be completed"
+                      while [[  $(oc get vmi windows2019-installation -o 'jsonpath={..status.phase}' 2&>/dev/null ) != "Succeeded" ]]
+                      do
+                         sleep 10
+                      done
+                      echo "Windows installation finished"
+
+                      if [[ $(oc get pvc win2k19 2&>/dev/null ) ]]
+                      then 
+                        oc delete pvc win2k19
+                      fi
+
+                      oc apply -f /mnt/install-windows-configmap/clone-pvc.yaml
+                      echo "waiting for pvc clone"
+                      while [[ $(oc get pvc win2k19 -o 'jsonpath={..status.phase}' ) !=  "Bound"  ]]
+                      do
+                         sleep 1 
+                      done
+                      echo "PVC clone completed"
+
+                      if [[ $(oc get dv -n  openshift-virtualization-os-images win2k19 2&>/dev/null ) ]]
+                      then
+                         oc delete dv -n openshift-virtualization-os-images win2k19
+                      fi
+
+                      oc apply -f /mnt/install-windows-configmap/clone-dv.yaml
+                      echo "Waiting for DataVolume clone"
+                      while [[ $(oc get dv -n openshift-virtualization-os-images win2k19 -o 'jsonpath={..status.phase}') != "Succeeded" ]]
+                      do
+                      	sleep 1 
+                      done
+                      echo "DataVolume clone completed"
+
+
+
+                      #Cleanup 
+                      oc delete -f /mnt/install-windows-configmap/windows-install.yaml
+                      oc delete -f /mnt/install-windows-configmap/clone-pvc.yaml
