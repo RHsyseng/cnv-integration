@@ -67,7 +67,7 @@ data:
                                 devices:
                                   disks:
                                     - disk:
-                                        bus: virtio
+                                        bus: sata
                                       name: rootdisk
                                     - bootOrder: 1
                                       cdrom:
