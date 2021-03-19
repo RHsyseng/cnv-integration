@@ -95,7 +95,7 @@
 		</AutoLogon>
             <FirstLogonCommands>
                 <SynchronousCommand wcm:action="add">
-	            <CommandLine>powershell -noexit d:\post-install.ps1
+	            <CommandLine>powershell -noexit f:\post-install.ps1
 		    </CommandLine>
                     <RequiresUserInput>false</RequiresUserInput>
                     <Order>1</Order>
