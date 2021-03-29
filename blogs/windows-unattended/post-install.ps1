@@ -2,6 +2,9 @@
 $BasePath = "C:\Windows\Temp\Install"
 New-item $BasePath -itemtype directory
 
+# Enable RDP
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
+Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
 # Add RedHat to Trusted Publisher
 $CertName = "balloon.cer"
@@ -19,6 +22,8 @@ msiexec /i e:\virtio-win-gt-x64.msi /qn /passive
 # install Qemu Tools (Drivers)
 msiexec /i e:\guest-agent\qemu-ga-x86_64.msi /qn /passive
 
+# Fix Guest Agent
+Start-Process  E:\vioserial\2k19\amd64\vioser.inf -Verb install
 
 # Get Cloud-init
 Set-ExecutionPolicy Unrestricted
