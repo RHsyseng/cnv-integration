@@ -98,7 +98,7 @@ data:
                               terminationGracePeriodSeconds: 180
                               volumes:
                                 - containerDisk:
-                                    image: registry.redhat.io/container-native-virtualization/virtio-win
+                                    image: registry.redhat.io/container-native-virtualization/virtio-win:v2.6.0
                                   name: windows-guest-tools
                                 - dataVolume:
                                     name: rootdisk
