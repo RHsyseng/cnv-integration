@@ -10,3 +10,8 @@
 ## Usage
 
     ./hco_topo.sh | dot -Tpng -o topo.png
+
+
+## Out Of The Box Install
+
+   Just run the OOTB_Install.sh file and follow the instructions
