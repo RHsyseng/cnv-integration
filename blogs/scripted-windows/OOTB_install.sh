@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-OCFILE="../../blogs/scripted-windows/oc-creds.yaml"
-YAMLFILE="../../blogs/scripted-windows/"
+OCFILE="./oc-creds.yaml"
+YAMLFILE="."
 
 # Check if the bak file exists and exit the script
-#in order to make sure that nothing is overwritten
+# in order to make sure that nothing is overwritten
 
 if [ -f "$OCFILE.bak" ]; then
 	echo "config file exists in $OCFILE.bak"
@@ -30,11 +30,7 @@ USER=$(echo "$OCUSER" | base64)
 PASS=$(echo "$OCPASS" | base64)
 
 sed -i.bak "s/<base64 URL>/$API/" $OCFILE
-sed -i.bak "s/<base64 user>/$USER/" $OCFILE
-sed -i.bak "s/<base64 password>/$PASS/" $OCFILE
+sed -i "s/<base64 user>/$USER/" $OCFILE
+sed -i "s/<base64 password>/$PASS/" $OCFILE
 
-kubectl apply -f $YAMLFILE/install-windows-configmap.yaml
-kubectl apply -f $YAMLFILE/win-installation-scripts.yaml
-kubectl apply -f $YAMLFILE/windows-install-pod.yaml
-
-
+kubectl apply -f $YAMLFILE/
