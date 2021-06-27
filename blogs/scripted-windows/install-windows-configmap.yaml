@@ -11,7 +11,7 @@ data:
                       metadata:
                         name: win2k19
                       spec:
-                        storageClassName: cnv-integration-svn
+                        storageClassName: my-storage-class
                         accessModes:
                           - ReadWriteOnce
                         resources:
