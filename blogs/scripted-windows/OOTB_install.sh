@@ -33,4 +33,6 @@ sed -i.bak "s/<base64 URL>/$API/" $OCFILE
 sed -i "s/<base64 user>/$USER/" $OCFILE
 sed -i "s/<base64 password>/$PASS/" $OCFILE
 
-kubectl apply -f $YAMLFILE/
+kubectl apply -f $YAMLFILE/install-windows-configmap.yaml
+kubectl apply -f $YAMLFILE/win-installation-scripts.yaml
+kubectl apply -f $YAMLFILE/windows-install-pod.yaml
