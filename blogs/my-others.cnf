@@ -1,0 +1,49 @@
+#
+# This group is read both by the client and the server
+# use it for options that affect everything
+#
+[client-server]
+
+#
+# include *.cnf from the config directory
+#
+!includedir /etc/my.cnf.d
+
+# MySQL Options
+
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+bind-address=0.0.0.0
+user=mysql
+wsrep_sst_auth=<your_user>:<your_password>
+
+default_storage_engine=InnoDB
+innodb_autoinc_lock_mode=2
+innodb_flush_log_at_trx_commit=0
+innodb_buffer_pool_size=128M
+
+binlog_format=ROW
+symbolic-links=0
+
+# These may need to be created prior to running galera_new_cluster and chowned to mysql:mysql. Run this if so:
+# sudo touch /var/log/mysqld.log && sudo chown mysql:mysql /var/log/mysqld.log
+# sudo mkdir /var/run/mysqld && sudo chown -R mysql:mysql /var/run/mysqld
+
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
+# Galera Options
+
+wsrep_on=ON
+wsrep_provider=/usr/lib64/galera-4/libgalera_smm.so
+
+wsrep_node_name='cnv-galera-db01'
+wsrep_node_address="cnv-galera-db01-ports.beehive-couchdb-ha.svc.cluster.local"
+
+wsrep_cluster_name='cnv-galera-ha'
+wsrep_cluster_address="gcomm://cnv-galera-db01-ports.beehive-couchdb-ha.svc.cluster.local,cnv-galera-db02-ports.beehive-couchdb-ha.svc.cluster.local,cnv-galera-db03-ports.beehive-couchdb-ha.svc.cluster.local"
+wsrep_provider_options="ist.recv_bind=10.0.2.2"
+
+wsrep_slave_threads=4
+wsrep_sst_method=mariabackup
