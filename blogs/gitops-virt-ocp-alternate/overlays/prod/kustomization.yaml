@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+namePrefix: prod-
+
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/template/spec/domain/memory/guest
+        value: 8192M
+      - op: replace
+        path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
+        value: prod-base-vm-disk
+    target:
+      kind: VirtualMachine
+
+        #images:
+        #- name: myapp
+        # newTag: 1.0.0
