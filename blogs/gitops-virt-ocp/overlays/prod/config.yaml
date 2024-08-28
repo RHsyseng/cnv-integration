@@ -1,0 +1,22 @@
+# Change PVC claimname based on vm name
+nameReference:
+- kind: PersistentVolumeClaim 
+  version: v1
+  fieldSpecs:
+  - kind: VirtualMachine
+    path: spec/template/spec/volumes/persistentVolumeClaim/claimName 
+
+# This is working now
+# Strangely called out here: https://github.com/kubernetes-sigs/kustomize/tree/master/examples/transformerconfigs#supporting-escape-characters-in-crd-path
+# and examples here: https://github.com/kubernetes-sigs/kustomize/tree/master/examples/transformerconfigs#builtin-namereference
+- kind: VirtualMachine
+  version: v1
+  fieldSpecs:
+    - kind: VirtualMachine
+      path: spec/template/metadata/labels/kubevirt.io\/domain
+ 
+- kind: VirtualMachine
+  version: v1
+  fieldSpecs:
+    - kind: VirtualMachine
+      path: metadata/labels/app

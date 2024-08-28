@@ -1,0 +1,20 @@
+# Change PVC claimname based on vm name
+nameReference:
+- kind: PersistentVolumeClaim 
+  version: v1
+  fieldSpecs:
+  - kind: VirtualMachine
+    path: spec/template/spec/volumes/persistentVolumeClaim/claimName 
+
+# Change labels based on VM name WITH prefix
+- kind: VirtualMachine
+  version: v1
+  fieldSpecs:
+    - kind: VirtualMachine
+      path: spec/template/metadata/labels/kubevirt.io\/domain
+ 
+- kind: VirtualMachine
+  version: v1
+  fieldSpecs:
+    - kind: VirtualMachine
+      path: metadata/labels/app
